@@ -22,7 +22,7 @@ var fileFilter = function(req, file, cb) {
 const uploads = multer({
   storage: storage,
   fileFilter: fileFilter
-})
+});
 router.get("/", (req, res) => {
   List.find()
     .exec()
@@ -71,7 +71,7 @@ router.get("/:itemId", (req, res) => {
       res.status(400).json({ message: "Error", error: err });
     });
 });
-router.post("/",uploads.single("todoImage"), (req, res) => {
+router.post("/", uploads.single("todoImage"), (req, res) => {
   var data = new List({
     title: req.body.title,
     description: req.body.description,
@@ -80,7 +80,6 @@ router.post("/",uploads.single("todoImage"), (req, res) => {
   data
     .save()
     .then(doc => {
-      console.log(doc);
       res.status(201).json({
         data: doc
       });
