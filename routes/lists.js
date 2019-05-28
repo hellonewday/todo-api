@@ -19,7 +19,10 @@ var fileFilter = function(req, file, cb) {
     cb(null, false);
   }
 };
-
+const uploads = multer({
+  storage: storage,
+  fileFilter: fileFilter
+})
 router.get("/", (req, res) => {
   List.find()
     .exec()
@@ -31,6 +34,7 @@ router.get("/", (req, res) => {
             title: item.title,
             description: item.description,
             URL: `${req.protocol}://${req.hostname}/lists/${item._id}`,
+            todoImage: `${req.protocol}://${req.hostname}/${item.todoImage}`,
             method: req.method
           };
         })
@@ -67,11 +71,11 @@ router.get("/:itemId", (req, res) => {
       res.status(400).json({ message: "Error", error: err });
     });
 });
-router.post("/", (req, res) => {
+router.post("/",uploads.single("todoImage"), (req, res) => {
   var data = new List({
     title: req.body.title,
     description: req.body.description,
-    image: req.body.image
+    todoImage: req.file.path
   });
   data
     .save()

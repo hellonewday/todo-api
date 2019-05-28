@@ -10,7 +10,7 @@ var List = new Schema({
     type: String,
     required: true
   },
-  image: {
+  todoImage: {
     type: String,
     required: true
   },
