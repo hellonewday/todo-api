@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-var mongoose = require("mongoose");
 var List = require("../model/List");
 router.get("/", (req, res) => {
   List.find()
