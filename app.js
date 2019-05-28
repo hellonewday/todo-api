@@ -19,11 +19,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use("/", (req, res) => {
-  res.send(
-    "<ol>API routes for this server:<li>GET: /lists</li><li>GET: /lists/{itemId}</li><li>POST: /lists</li><li>DELETE /lists/{itemId}</li></ol>"
-  );
-});
+app.use("/", express.static(__dirname));
+
 app.use("/lists", listRoute);
 
 module.exports = app;
