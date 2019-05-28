@@ -15,6 +15,7 @@ router.get("/", (req, res) => {
             id: item._id,
             title: item.title,
             description: item.description,
+            likes: item.likes,
             URL: `${req.protocol}://${req.hostname}/lists/${item._id}`,
             method: req.method
           };
