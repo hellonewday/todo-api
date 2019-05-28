@@ -23,7 +23,9 @@ router.get("/:itemId", (req, res) => {
     .select("title description")
     .exec()
     .then(doc => {
-      res.status(200).send(`<h1>${doc.title}</h1><p>${doc.description}</p><a href='/'>Back</a>`);
+      res.status(200).json({
+        data: doc
+      });
     })
     .catch(err => {
       res.status(400).json({
@@ -50,7 +52,9 @@ router.post("/", (req, res) => {
     .save()
     .then(doc => {
       console.log(doc);
-      res.status(201).redirect("/");
+      res.status(201).json({
+        data: doc
+      });
     })
     .catch(err => {
       res.status(200).json({
@@ -65,7 +69,7 @@ router.delete("/:itemId", (req, res) => {
     .exec()
     .then(doc => {
       console.log(doc);
-      res.status(200).redirect("/");
+      res.status(200);
     })
     .catch(err => {
       res.status(400).json({
