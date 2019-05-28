@@ -10,10 +10,6 @@ var List = new Schema({
     type: String,
     required: true
   },
-  todoImage: {
-    type: String,
-    required: true
-  },
   created: {
     type: Date,
     default: Date.now()
