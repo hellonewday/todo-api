@@ -31,6 +31,7 @@ router.get("/", (req, res) => {
         count: doc.length,
         data: doc.map(item => {
           return {
+            id: doc._id,
             title: item.title,
             description: item.description,
             URL: `${req.protocol}://${req.hostname}/lists/${item._id}`,
