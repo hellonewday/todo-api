@@ -30,7 +30,7 @@ router.get("/", (req, res) => {
           return {
             title: item.title,
             description: item.description,
-            URL: `${req.protocol}://${req.hostname}/${item._id}`,
+            URL: `${req.protocol}://${req.hostname}/lists/${item._id}`,
             method: req.method
           };
         })
