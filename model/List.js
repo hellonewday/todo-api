@@ -1,6 +1,5 @@
 var mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
 var List = new Schema({
   title: {
     type: String,
@@ -8,12 +7,17 @@ var List = new Schema({
   },
   description: {
     type: String,
-    required: true
+    required: false,
+    default: "No description..."
   },
   likes: {
     type: Number,
     default: 0
   },
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment'
+  }],
   created: {
     type: Date,
     default: Date.now()
