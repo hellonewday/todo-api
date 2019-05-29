@@ -6,13 +6,6 @@ var moment = require("moment");
 // Configuration
 moment.locale("vi");
 // Get all the todo item
-router.get("/test/:itemId", (req, res) => {
-  var result = Comment.find({ todo: req.params.itemId });
-  var x = result.exec().then(doc => {
-    res.json({ data: doc });
-    return doc;
-  });
-});
 router.get("/", (req, res) => {
   List.find()
     .exec()
@@ -119,6 +112,7 @@ router.get("/comments/:itemId", (req, res) => {
     .exec()
     .then(doc => {
       res.status(200).json({
+        counts: doc.length,
         data: doc.map(item => {
           return {
             id: item._id,

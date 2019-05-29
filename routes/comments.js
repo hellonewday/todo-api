@@ -20,8 +20,8 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:postId", (req, res) => {
-  Comment.findOne({ _id: req.params.postId })
+router.get("/:commentId", (req, res) => {
+  Comment.findOne({ _id: req.params.commentId })
     .populate("todo", "title")
     .exec()
     .then(doc => {
@@ -37,10 +37,10 @@ router.get("/:postId", (req, res) => {
     });
 });
 //send a comment to a specific todo list:
-router.post("/:postId", (req, res) => {
+router.post("/:todoId", (req, res) => {
   var data = Comment({
     content: req.body.content,
-    todo: req.params.postId
+    todo: req.params.todoId
   });
   data
     .save()
@@ -56,5 +56,33 @@ router.post("/:postId", (req, res) => {
       });
     });
 });
-
+router.patch("/:commentId", (req, res) => {
+  Comment.updateOne({ _id: req.params.commentId }, { $set: req.body })
+    .exec()
+    .then(() =>
+      res.status(200).json({
+        message: "Updated!"
+      })
+    )
+    .catch(err => {
+      res.status(400).json({
+        message: "Error",
+        error: err
+      });
+    });
+});
+router.delete("/:commentId", (req, res) => {
+  Comment.deleteOne({ _id: req.params.commentId })
+    .exec()
+    .then(() => {
+      res.status(200).json({
+           message: 'Deleted!'
+      });
+    }).catch(err =>{
+         res.status(400).json({
+              message: 'Error',
+              error: err
+         })
+    });
+});
 module.exports = router;

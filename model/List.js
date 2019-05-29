@@ -14,10 +14,6 @@ var List = new Schema({
     type: Number,
     default: 0
   },
-  comments: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Comment'
-  }],
   created: {
     type: Date,
     default: Date.now()
