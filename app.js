@@ -10,7 +10,8 @@ var commentRoute = require("./routes/comments");
 mongoose.connect(
   "mongodb+srv://quochung5c:quochung5c@cluster0-4veva.gcp.mongodb.net/todo?retryWrites=true",
   {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
   },
   () => {
     console.log("Connect to database");

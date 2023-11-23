@@ -5,6 +5,7 @@ var Comment = require("../model/Comment");
 var moment = require("moment");
 // Configuration
 moment.locale("vi");
+
 // Get all the todo item
 router.get("/", (req, res) => {
   List.find()
@@ -19,9 +20,7 @@ router.get("/", (req, res) => {
             description: item.description,
             created: moment(item.created).format("LLLL"),
             fromNow: moment(item.created).fromNow(),
-            likes: item.likes,
-            URL: `${req.protocol}://${req.hostname}/lists/${item._id}`,
-            method: req.method
+            completed: item.completed
           };
         })
       });
