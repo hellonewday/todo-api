@@ -4,7 +4,6 @@ let List = require("../model/List");
 let Comment = require("../model/Comment");
 let moment = require("moment");
 // Configuration
-moment.locale("vi");
 
 function generateFindList(query) {
   if (query === null || query === undefined) {

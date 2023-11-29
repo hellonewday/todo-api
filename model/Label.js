@@ -9,7 +9,7 @@ let Label = new Schema(
     },
     color: {
       type: String,
-      required: true,
+      required: false,
       default: "#f0eedf",
     },
   },
