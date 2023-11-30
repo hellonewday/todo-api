@@ -27,7 +27,7 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   let data = new Label({
-    name: req.body.name,
+    name: req.body.name.trim(),
     color: req.body.color,
   });
 

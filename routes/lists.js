@@ -11,7 +11,7 @@ function generateFindList(query) {
   } else {
     let obj = {};
     if (query.title !== null && query.title !== undefined) {
-      obj = { ...obj, title: { $regex: query.title, $options: "i" } };
+      obj = { ...obj, title: { $regex: query.title.trim(), $options: "i" } };
     }
     if (query.category !== null && query.category !== undefined) {
       obj = { ...obj, category: query.category };
@@ -25,18 +25,36 @@ function generateFindList(query) {
         obj = { ...obj, progress: { $eq: 0 } };
       }
     }
-    return List.find(obj);
+    return [List.find(obj), obj];
   }
 }
 
 // Get all the todo item
 router.get("/", (req, res) => {
-  generateFindList(req.query)
+  const page = parseInt(req.query.page) || 1; // Get page query parameter, default to 1
+  const limit = parseInt(req.query.limit) || 5; // Get limit query parameter, default to 10
+  const skipIndex = (page - 1) * limit;
+  console.log(generateFindList(req.query)[1]);
+
+  // if (req.query.sort && (req.query.sort === "1" || req.query.sort === "-1")) {
+  //   sortQuery.progress = parseInt(req.query.sort);
+  // }
+  generateFindList(req.query)[0]
+    .sort(req.query.sort ? { progress: req.query.sort } : { created: -1 })
+    .skip(skipIndex)
+    .limit(limit)
     .populate("category", "name color")
     .exec()
-    .then((doc) => {
+    .then(async (doc) => {
+      const totalTodos = await List.countDocuments(
+        generateFindList(req.query)[1]
+      );
+      const totalPages = Math.ceil(totalTodos / limit);
+
       res.json({
-        count: doc.length,
+        count: totalTodos,
+        currentPage: page,
+        totalPages,
         data: doc.map((item) => {
           return {
             id: item._id,
@@ -53,6 +71,7 @@ router.get("/", (req, res) => {
       });
     })
     .catch((err) => {
+      console.log(err);
       res.status(400).json({
         message: "Error",
         error: err,
@@ -88,8 +107,8 @@ router.get("/:itemId", (req, res) => {
 
 router.post("/", (req, res) => {
   let data = new List({
-    title: req.body.title,
-    description: req.body.description,
+    title: req.body.title.trim(),
+    description: req.body.description.trim(),
     category: req.body.category,
     progress: parseInt(req.body.progress),
     completed: parseInt(req.body.progress) === 100 ? true : false,
