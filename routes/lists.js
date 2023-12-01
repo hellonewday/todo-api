@@ -40,7 +40,15 @@ router.get("/", (req, res) => {
   //   sortQuery.progress = parseInt(req.query.sort);
   // }
   generateFindList(req.query)[0]
-    .sort(req.query.sort ? { progress: req.query.sort } : { created: -1 })
+    .sort(
+      req.query.due
+        ? { progress: req.query.due }
+        : req.query.task
+        ? { title: req.query.task }
+        : req.query.created
+        ? { updated: req.query.created }
+        : { created: -1 }
+    )
     .skip(skipIndex)
     .limit(limit)
     .populate("category", "name color")
@@ -60,8 +68,8 @@ router.get("/", (req, res) => {
             id: item._id,
             title: item.title,
             description: item.description,
-            created: moment(item.created).format("LLLL"),
-            updated: moment(item.updated).format("LLLL"),
+            created: moment(item.created).format("lll"),
+            updated: moment(item.updated).format("lll"),
             fromNow: moment(item.created).fromNow(),
             category: item.category,
             progress: item.progress,
@@ -88,8 +96,8 @@ router.get("/:itemId", (req, res) => {
           id: doc._id,
           title: doc.title,
           description: doc.description,
-          created: moment(doc.created).format("LLLL"),
-          updated: moment(item.updated).format("LLLL"),
+          created: moment(doc.created).format("lll"),
+          updated: moment(item.updated).format("lll"),
           fromNow: moment(doc.created).fromNow(),
           category: doc.category,
           progress: doc.progress,
@@ -108,7 +116,7 @@ router.get("/:itemId", (req, res) => {
 router.post("/", (req, res) => {
   let data = new List({
     title: req.body.title.trim(),
-    description: req.body.description.trim(),
+    description: req.body.description,
     category: req.body.category,
     progress: parseInt(req.body.progress),
     completed: parseInt(req.body.progress) === 100 ? true : false,
@@ -124,8 +132,8 @@ router.post("/", (req, res) => {
           id: updatedTodo._id,
           title: updatedTodo.title,
           description: updatedTodo.description,
-          created: moment(updatedTodo.created).format("LLLL"),
-          updated: moment(updatedTodo.updated).format("LLLL"),
+          created: moment(updatedTodo.created).format("lll"),
+          updated: moment(updatedTodo.updated).format("lll"),
           fromNow: moment(updatedTodo.created).fromNow(),
           category: updatedTodo.category,
           progress: updatedTodo.progress,
@@ -153,8 +161,8 @@ router.patch("/:itemId", (req, res, next) => {
           id: updatedTodo._id,
           title: updatedTodo.title,
           description: updatedTodo.description,
-          created: moment(updatedTodo.created).format("LLLL"),
-          updated: moment(updatedTodo.updated).format("LLLL"),
+          created: moment(updatedTodo.created).format("lll"),
+          updated: moment(updatedTodo.updated).format("lll"),
           fromNow: moment(updatedTodo.created).fromNow(),
           category: updatedTodo.category,
           progress: updatedTodo.progress,
@@ -194,8 +202,8 @@ router.get("/comments/:itemId", (req, res) => {
           return {
             id: item._id,
             content: item.content,
-            created: moment(item.created).format("LLLL"),
-            updated: moment(item.updated).format("LLLL"),
+            created: moment(item.created).format("lll"),
+            updated: moment(item.updated).format("lll"),
             fromNow: moment(item.created).fromNow(),
           };
         }),
