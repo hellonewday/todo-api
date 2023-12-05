@@ -3,7 +3,6 @@ let router = express.Router();
 let List = require("../model/List");
 let Comment = require("../model/Comment");
 let moment = require("moment");
-// Configuration
 
 function generateFindList(query) {
   if (query === null || query === undefined) {
@@ -13,7 +12,7 @@ function generateFindList(query) {
     if (query.title !== null && query.title !== undefined) {
       obj = { ...obj, title: { $regex: query.title.trim(), $options: "i" } };
     }
-    if (query.category !== null && query.category !== undefined) {
+    if (query.category !== "" && query.category !== undefined) {
       obj = { ...obj, category: query.category };
     }
     if (query.progress !== null && query.progress !== undefined) {
@@ -21,7 +20,7 @@ function generateFindList(query) {
         obj = { ...obj, completed: true };
       } else if (query.progress === "50") {
         obj = { ...obj, progress: { $gt: 0, $lt: 100 } };
-      } else {
+      } else if (query.progress === "0") {
         obj = { ...obj, progress: { $eq: 0 } };
       }
     }
@@ -35,10 +34,6 @@ router.get("/", (req, res) => {
   const limit = parseInt(req.query.limit) || 5; // Get limit query parameter, default to 10
   const skipIndex = (page - 1) * limit;
   console.log(generateFindList(req.query)[1]);
-
-  // if (req.query.sort && (req.query.sort === "1" || req.query.sort === "-1")) {
-  //   sortQuery.progress = parseInt(req.query.sort);
-  // }
   generateFindList(req.query)[0]
     .sort(
       req.query.due
@@ -52,6 +47,7 @@ router.get("/", (req, res) => {
     .skip(skipIndex)
     .limit(limit)
     .populate("category", "name color")
+    .populate("comments", "content likes created")
     .exec()
     .then(async (doc) => {
       const totalTodos = await List.countDocuments(
@@ -71,6 +67,7 @@ router.get("/", (req, res) => {
             created: moment(item.created).format("lll"),
             updated: moment(item.updated).format("lll"),
             fromNow: moment(item.created).fromNow(),
+            comments: item.comments,
             category: item.category,
             progress: item.progress,
             completed: item.completed,
@@ -89,23 +86,44 @@ router.get("/", (req, res) => {
 // Get the item of the todo-list
 router.get("/:itemId", (req, res) => {
   List.findById({ _id: req.params.itemId })
+    .populate("category", "name color")
+    .populate("comments", "content likes created")
     .exec()
     .then((doc) => {
+      console.log(
+        doc.comments.map((item) => {
+          return {
+            created: moment(item.created).format("lll"),
+            content: item.content,
+            likes: item.likes,
+            id: item._id,
+          };
+        })
+      );
       res.json({
         data: {
           id: doc._id,
           title: doc.title,
           description: doc.description,
           created: moment(doc.created).format("lll"),
-          updated: moment(item.updated).format("lll"),
+          updated: moment(doc.updated).format("lll"),
           fromNow: moment(doc.created).fromNow(),
           category: doc.category,
           progress: doc.progress,
+          comments: doc.comments.map((item) => {
+            return {
+              created: moment(item.created).format("lll"),
+              content: item.content,
+              likes: item.likes,
+              id: item._id,
+            };
+          }),
           completed: doc.completed,
         },
       });
     })
     .catch((err) => {
+      console.log(err);
       res.status(400).json({
         message: "Error",
         error: err,
